@@ -14,7 +14,7 @@ val tfsClone = taskKey[Int]("Clone TensorFlow Serving github repo")
 val tfsBranch = taskKey[Int]("Check out TensorFlow Serving branch")
 
 
-val tfVersion = "1.10"
+val tfVersion = "1.12"
 version := tfVersion+ ".0"
 
 val protoDir = settingKey[File]("location of proto file direcitory")
