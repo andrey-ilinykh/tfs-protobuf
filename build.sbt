@@ -8,14 +8,15 @@ val tfDir = "tf"
 val tfsDir = "tfs"
 
 val tfClone = taskKey[Int]("Clone TensorFlow github repo")
-val tfBranch = taskKey[Int]("Check out TensorFlow branch")
+val tfBranch = taskKey[Int]("Check out TensorFlow tag")
 
 val tfsClone = taskKey[Int]("Clone TensorFlow Serving github repo")
-val tfsBranch = taskKey[Int]("Check out TensorFlow Serving branch")
+val tfsBranch = taskKey[Int]("Check out TensorFlow Serving tag")
 
 
-val tfVersion = "1.12"
-version := tfVersion+ ".0"
+val tfTag = "v1.13.1"
+val tfsTag = "1.13.0"
+version := "1.13.0"
 
 val protoDir = settingKey[File]("location of proto file direcitory")
 protoDir := target.value / "proto"
@@ -41,12 +42,12 @@ tfsClone := {
 
 tfBranch := {
   tfClone.value
-  Process(s"git checkout r$tfVersion", new  File(s"${target.value}/$tfDir")).!
+  Process(s"git checkout tags/$tfTag", new  File(s"${target.value}/$tfDir")).!
 }
 
 tfsBranch := {
   tfsClone.value
-  Process(s"git checkout r$tfVersion", new  File(s"${target.value}/$tfsDir")).!
+  Process(s"git checkout tags/$tfsTag", new  File(s"${target.value}/$tfsDir")).!
 }
 
 val copyProtoFiles = taskKey[Int]("Copy protobuf files")
@@ -67,7 +68,7 @@ mappings in packageBin in Compile ++= {
   val tfRepoDir = new  File(s"${target.value}/$tfDir")
   val tfsRepoDir = new  File(s"${target.value}/$tfsDir")
   val baseDirectories: Seq[File] =  file(tfRepoDir.getPath) :: file(tfsRepoDir.getPath) :: Nil
-  findProtoFiles.value pair rebase(baseDirectories, protoDir.value) map(p => (p._1 -> p._2.getPath))
+  findProtoFiles.value pair relativeTo(baseDirectories) map(p => (p._1 -> p._2))
 }
 
 
